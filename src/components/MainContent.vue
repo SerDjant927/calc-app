@@ -22,7 +22,7 @@
             </select>
 
             <p>Сумма для оплаты: {{ total }}</p>
-            <p v-if="discount">Сумма с учетом скидки: {{ totalWithDiscount }}</p>
+            <p v-if="discount">Выгоднее на: {{ totalWithDiscount }}</p>
         </div>
     </section>
 </template>
@@ -77,9 +77,15 @@ export default {
             this.total = price * rate;
 
             if (this.selectedPeriod === 'year') {
+                // 1000 * 1
                 const yearlyPrice = this.tariffs[this.selectedTariff]['year'] * rate;
-                this.discount = yearlyPrice - this.total;
-                this.totalWithDiscount = yearlyPrice;
+                // 100 * 1
+                const monthlyPrice = this.tariffs[this.selectedTariff]['month'] * rate;
+                this.discount = monthlyPrice * 12 - yearlyPrice;
+                this.totalWithDiscount = this.discount.toFixed(3);
+                if (this.totalWithDiscount % 1 === 0) {
+                    this.totalWithDiscount = parseInt(this.totalWithDiscount);
+                }
             } else {
                 this.discount = 0;
                 this.totalWithDiscount = 0;
